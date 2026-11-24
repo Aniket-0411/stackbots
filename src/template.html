@@ -1,0 +1,183 @@
+<div id="app">
+<canvas id="game" aria-label="Stackbots game view"></canvas>
+
+<div id="hud" class="hidden">
+  <div class="hud-top" id="hud-top">
+  <div class="hud-tl">
+    <div class="hud-pill"><span class="lid" id="hud-lid">1-1</span><span id="hud-lname">Level</span></div>
+    <div class="hud-sub"><div class="hud-pill" id="hud-time">0:00.0</div><div class="hud-pill" id="hud-gears">&#9881; 0/0</div></div>
+  </div>
+  <div class="hud-tr">
+    <div id="hud-chips"></div>
+    <button class="icon-btn peek" id="hud-peek" aria-label="Hold to see the whole level" title="Hold to see the whole level (Q)"><svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="#FFF6E8" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M2 7V2h5M15 2h5v5M20 15v5h-5M7 20H2v-5"/><rect x="7" y="7" width="8" height="8" rx="1.5" fill="#FFB627" stroke="none"/></svg></button>
+    <button class="icon-btn" id="hud-pause" aria-label="Pause">II</button>
+  </div>
+  </div>
+  <div id="legend" class="hidden" title="Click to dismiss"></div>
+  <div id="hud-hint" class="off"></div>
+  <div id="hud-banner" class="off"></div>
+  <div id="hud-net" class="hidden">Reconnecting&hellip;</div>
+</div>
+
+<div id="rotate" class="hidden">
+  <div class="rot-card">
+    <svg width="74" height="60" viewBox="0 0 74 60" aria-hidden="true"><rect x="22" y="4" width="30" height="52" rx="6" fill="#33295A" stroke="#FFF6E8" stroke-width="3"/><rect x="9" y="20" width="56" height="30" rx="6" fill="#FFB627" stroke="#120D24" stroke-width="3"/><path d="M60 8 a12 12 0 0 1 8 14" fill="none" stroke="#2EC4B6" stroke-width="3" stroke-linecap="round"/><path d="M64 22 l4 1 l1-5" fill="none" stroke="#2EC4B6" stroke-width="3" stroke-linecap="round"/></svg>
+    <b>Turn your phone sideways</b>
+    <span>Stackbots levels are wide &mdash; landscape shows a lot more of them.</span>
+    <button class="btn small ghost" id="b-rotate-ok">Keep playing upright</button>
+  </div>
+</div>
+
+<div id="touch" class="hidden">
+  <div class="tpad tl">
+    <button class="tb" data-k="left" aria-label="Left">&#9664;</button>
+    <button class="tb" data-k="right" aria-label="Right">&#9654;</button>
+    <button class="tb down" data-k="down" aria-label="Down">DN</button>
+  </div>
+  <div class="tpad tr">
+    <button class="tb up" data-k="up" aria-label="Up / interact">UP</button>
+    <button class="tb jump" data-k="jump" aria-label="Jump">JUMP</button>
+  </div>
+</div>
+
+<div id="screens">
+  <!-- TITLE -->
+  <section class="screen" id="scr-title">
+    <h1 class="logo">STACK<span>BOTS</span></h1>
+    <div class="tagline">Stack up. Power up. Everybody in!</div>
+    <div class="panel title-panel stack">
+      <label class="field">Your bot's name
+        <input class="inp" id="in-name" maxlength="14" autocomplete="off" spellcheck="false" placeholder="Name">
+      </label>
+      <button class="btn primary big" id="b-host">Host Online</button>
+      <div class="join-row">
+        <input class="inp code" id="in-code" maxlength="5" autocomplete="off" spellcheck="false" placeholder="CODE" aria-label="Room code">
+        <button class="btn teal" id="b-join">Join</button>
+      </div>
+      <div class="fine" id="net-note"></div>
+      <div class="or">or</div>
+      <div class="row">
+        <button class="btn coral" id="b-local">Local Play</button>
+        <button class="btn ghost" id="b-settings">Settings</button>
+      </div>
+      <div class="row"><button class="btn ghost small" id="b-help">How to play</button><button class="btn ghost small" id="b-credits">Credits</button></div>
+    </div>
+    <div class="ver" id="ver"></div>
+  </section>
+
+  <!-- LOBBY -->
+  <section class="screen dim" id="scr-lobby">
+    <div class="panel wide">
+      <h2 id="lobby-title">Room</h2>
+      <div id="lobby-codewrap">
+        <div class="fine">Share this code with up to 3 friends</div>
+        <div class="code-box"><div class="code-text" id="lobby-code">-----</div><button class="btn small" id="b-copy">Copy</button></div>
+      </div>
+      <div class="fine" id="lobby-localhelp"></div>
+      <div class="slots" id="lobby-slots"></div>
+      <div class="fine status-line" id="lobby-status"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn ghost" id="b-lobby-leave">Leave</button>
+        <button class="btn primary" id="b-lobby-start">Pick a level</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEVEL SELECT -->
+  <section class="screen dim2" id="scr-select">
+    <div class="sel-head">
+      <button class="btn small ghost" id="b-sel-back">&#9664; Back</button>
+      <h2>Pick a level</h2>
+      <div class="fine" id="sel-count" style="min-width:60px;text-align:right"></div>
+    </div>
+    <div class="guest-note hidden" id="sel-guest">The host is picking a level&hellip;</div>
+    <div class="tabs" id="sel-tabs"></div>
+    <div class="world-title" id="sel-wtitle"></div>
+    <div class="cards" id="sel-cards"></div>
+  </section>
+
+  <!-- PAUSE -->
+  <section class="screen dim" id="scr-pause">
+    <div class="panel stack" style="max-width:340px">
+      <h2>Paused</h2>
+      <div class="pause-hint hidden" id="pause-hint"></div>
+      <button class="btn primary" id="b-resume">Resume</button>
+      <button class="btn" id="b-restart">Restart <span class="kbd">R</span></button>
+      <button class="btn" id="b-pselect">Level Select</button>
+      <button class="btn" id="b-pmute">Sound: on</button>
+      <button class="btn coral" id="b-leave">Leave</button>
+      <div class="fine" id="pause-note"></div>
+    </div>
+  </section>
+
+  <!-- CLEAR -->
+  <section class="screen dim" id="scr-clear">
+    <div class="panel" style="max-width:460px">
+      <div class="big-title">CLEARED!</div>
+      <div class="fine" id="clear-name"></div>
+      <div class="stats">
+        <div class="stat"><div class="k">Time</div><div class="v" id="clear-time">0:00</div></div>
+        <div class="stat"><div class="k">Gears</div><div class="v" id="clear-gears">0/0</div></div>
+        <div class="stat"><div class="k">Best</div><div class="v best" id="clear-best">-</div></div>
+      </div>
+      <div class="newbest hidden" id="clear-newbest">New best!</div>
+      <div class="row" style="margin-top:14px" id="clear-host">
+        <button class="btn ghost" id="b-clear-select">Level Select</button>
+        <button class="btn primary big" id="b-next">Next &#9654;</button>
+      </div>
+      <div class="fine hidden" id="clear-guest">Waiting for the host&hellip;</div>
+    </div>
+  </section>
+
+  <!-- CREDITS -->
+  <section class="screen dim2" id="scr-credits">
+    <div class="panel stack" style="max-width:460px">
+      <h2>You did it!</h2>
+      <div class="credits" id="credits-body"></div>
+      <div class="row"><button class="btn primary" id="b-credits-ok">Back</button></div>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section class="screen dim" id="scr-settings">
+    <div class="panel" style="max-width:440px">
+      <h2>Settings</h2>
+      <div class="toggle">Sound effects <button class="btn small" id="t-sound">On</button></div>
+      <div class="toggle">Music <button class="btn small" id="t-music">On</button></div>
+      <div class="toggle">Screen shake <button class="btn small" id="t-shake">On</button></div>
+      <div class="toggle">Touch buttons <button class="btn small" id="t-touch">Auto</button></div>
+      <h3>Advanced</h3>
+      <div class="toggle">Online play via <button class="btn small" id="t-net">Auto</button></div>
+      <div class="fine" id="net-desc" style="text-align:left;margin-top:4px"></div>
+      <div class="toggle">Progress <button class="btn small coral" id="t-reset">Reset</button></div>
+      <div class="row" style="margin-top:12px"><button class="btn primary" id="b-settings-ok">Done</button></div>
+    </div>
+  </section>
+
+  <!-- HELP -->
+  <section class="screen dim" id="scr-help">
+    <div class="panel" style="max-width:500px">
+      <h2>How to play</h2>
+      <div class="help">
+        <p>Carry the <b>Power Cell</b> into the <b>Exit Hatch</b> to unlock it, then <b>every</b> bot climbs in. Bots are solid: stand on each other's heads, push heavy crates together, hold buttons for friends. If anyone gets scrapped, the whole team restarts.</p>
+        <p><b>Online:</b> <span class="kbd">&larr;</span><span class="kbd">&rarr;</span> or <span class="kbd">A</span><span class="kbd">D</span> move &middot; <span class="kbd">Space</span> <span class="kbd">Z</span> <span class="kbd">W</span> <span class="kbd">&uarr;</span> jump &middot; <span class="kbd">W</span>/<span class="kbd">&uarr;</span> also enter hatch / flip lever &middot; <span class="kbd">&darr;</span>+jump drops through thin floors.</p>
+        <p><b>Local:</b> P1 <span class="kbd">W</span><span class="kbd">A</span><span class="kbd">S</span><span class="kbd">D</span> (+<span class="kbd">Space</span>) &middot; P2 arrows (+<span class="kbd">Enter</span>) &middot; P3/P4 gamepads (A jump, Y / d-pad up interact). <span class="kbd">Tab</span> hands P1's keys to the next idle bot.</p>
+        <p><span class="kbd">R</span> restart &middot; <span class="kbd">Esc</span> pause &middot; <span class="kbd">M</span> mute</p>
+      </div>
+      <div class="row"><button class="btn primary" id="b-help-ok">Got it</button></div>
+    </div>
+  </section>
+
+  <!-- CONNECTING -->
+  <section class="screen dim" id="scr-wait">
+    <div class="panel stack" style="max-width:380px">
+      <h2 id="wait-title">Connecting</h2>
+      <div class="fine" id="wait-text"><span class="spinner"></span>Please wait&hellip;</div>
+      <div class="row"><button class="btn ghost" id="b-wait-cancel">Cancel</button></div>
+    </div>
+  </section>
+</div>
+
+<div id="toasts"></div>
+<div id="dialog" class="hidden"><div class="panel"><h2 id="dlg-title"></h2><p id="dlg-text"></p><div class="row" id="dlg-btns"></div></div></div>
+</div>
